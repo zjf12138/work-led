@@ -1,0 +1,46 @@
+/*!
+ * MindPlus
+ * mpython
+ *
+ */
+//#include <MPython.h>
+#include <DFRobot_Iot.h>
+// 函数声明
+void obloqMqttEventT0(String& message);
+// 静态常量
+const String topics[5] = {"siot/siottttttttttttttttt","","","",""};
+const MsgHandleCb msgHandles[5] = {obloqMqttEventT0,NULL,NULL,NULL,NULL};
+// 创建对象
+DFRobot_Iot myIot;
+int ledPin = D6;
+
+// 主程序开始
+void setup() {
+  Serial.begin(115200);
+  pinMode(ledPin,OUTPUT);
+//  mPython.begin();
+  myIot.setMqttCallback(msgHandles);
+  myIot.wifiConnect("dfrobotOffice", "dfrobot2011");
+  while (!myIot.wifiStatus()) {yield();}
+  myIot.init("192.168.1.194","siot","","dfrobot", topics, 1883);
+  myIot.connect();
+  Serial.println("发起连接");
+  while (!myIot.connected()) {yield();}
+Serial.println("MQTT链接成功");
+  myIot.publish(topic_0, "hello");
+}
+void loop() {
+
+}
+
+// 事件回调函数
+void obloqMqttEventT0(String& message) {
+  if ((message==String("on"))) {
+Serial.println("66666");
+    digitalWrite(ledPin,HIGH);
+  }
+    else if ((message==String("off"))) {
+Serial.println("7777");
+    digitalWrite(ledPin,LOW);
+  }
+}
